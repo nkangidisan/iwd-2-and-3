@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IWD Practicals | Experiments 2 &amp; 3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #f4f5fb; --surface: #fff; --text: #1c2033; --muted: #6b7083; --border: #e3e5ef; --accent: #4f46e5; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0f1120; --surface: #181b2e; --text: #e8eaf4; --muted: #9aa0b8; --border: #2b3049; --accent: #818cf8; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    main { max-width: 900px; margin: 0 auto; padding: 48px 16px; }
+    h1 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; letter-spacing: -.02em; }
+    .sub { color: var(--muted); margin: 6px 0 32px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    a.card {
+      display: block; text-decoration: none; color: inherit; padding: 24px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      transition: transform .2s, border-color .2s;
+    }
+    a.card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .tag { font-size: .75rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; }
+    h2 { margin: 8px 0; font-size: 1.2rem; }
+    p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
+    .go { margin-top: 16px; font-weight: 600; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Intelligent Web Designing</h1>
+    <p class="sub">01AL0501 · Department of BS – AI ML &amp; DS · Practical experiments</p>
+    <div class="grid">
+      <a class="card" href="experiment-2/index.html">
+        <span class="tag">Experiment 2</span>
+        <h2>Live Profile Studio</h2>
+        <p>A responsive UI that updates headings, text and a preview card from user input in real time, with instant validation.</p>
+        <div class="go">Open →</div>
+      </a>
+      <a class="card" href="experiment-3/index.html">
+        <span class="tag">Experiment 3</span>
+        <h2>Sales Analytics Dashboard</h2>
+        <p>Interactive Chart.js line and bar charts with dataset statistics, insights and a linear-regression forecast.</p>
+        <div class="go">Open →</div>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

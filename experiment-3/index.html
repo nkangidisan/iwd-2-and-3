@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Experiment 3 – Interactive Line and Bar chart dashboard using Chart.js to display dataset statistics.">
+  <title>Sales Analytics Dashboard | Experiment 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Step 2: include the Chart.js library from a CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">📊</span>
+      <div>
+        <h1>Sales Analytics Dashboard</h1>
+        <p class="subtitle">Experiment 3 · Interactive Line &amp; Bar charts with Chart.js</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="liveBtn" class="btn ghost" type="button" aria-pressed="false">▶ Simulate live data</button>
+      <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- ===== Controls ===== -->
+    <section class="panel controls" aria-label="Dashboard controls">
+      <div class="control">
+        <label for="fromSel">From</label>
+        <select id="fromSel"></select>
+      </div>
+      <div class="control">
+        <label for="toSel">To</label>
+        <select id="toSel"></select>
+      </div>
+      <div class="control">
+        <span class="control-label">Bar layout</span>
+        <div class="segmented" role="group" aria-label="Bar chart layout">
+          <button type="button" data-mode="grouped" class="active">Grouped</button>
+          <button type="button" data-mode="stacked">Stacked</button>
+          <button type="button" data-mode="horizontal">Horizontal</button>
+        </div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="forecastToggle" checked>
+        <span class="track"><span class="thumb"></span></span>
+        Show forecast
+      </label>
+      <button id="resetBtn" class="btn ghost" type="button">↺ Reset data</button>
+    </section>
+
+    <!-- ===== KPI cards (dataset statistics) ===== -->
+    <section class="kpis" aria-label="Key statistics">
+      <article class="kpi">
+        <span class="kpi-label">Total Sales</span>
+        <strong class="kpi-value" id="kpiSales">0</strong>
+        <span class="kpi-sub" id="kpiSalesSub">—</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Total Orders</span>
+        <strong class="kpi-value" id="kpiOrders">0</strong>
+        <span class="kpi-sub" id="kpiOrdersSub">—</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Sales Growth</span>
+        <strong class="kpi-value" id="kpiGrowth">0%</strong>
+        <span class="kpi-sub" id="kpiGrowthSub">—</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Best Month</span>
+        <strong class="kpi-value" id="kpiBest">—</strong>
+        <span class="kpi-sub" id="kpiBestSub">—</span>
+      </article>
+      <article class="kpi accent">
+        <span class="kpi-label">Next Month Forecast</span>
+        <strong class="kpi-value" id="kpiForecast">—</strong>
+        <span class="kpi-sub" id="kpiForecastSub">Linear regression on sales</span>
+      </article>
+    </section>
+
+    <!-- ===== Step 1: two canvas elements ===== -->
+    <section class="charts">
+      <article class="panel chart-card">
+        <div class="chart-head">
+          <div>
+            <h2>Monthly Trend</h2>
+            <p>Sales and orders over time (dual axis). Click legend items to toggle a series.</p>
+          </div>
+          <button class="btn ghost small" type="button" data-download="lineChart" title="Download as PNG">⬇ PNG</button>
+        </div>
+        <div class="chart-box"><canvas id="lineChart" aria-label="Line chart of monthly sales and orders" role="img"></canvas></div>
+      </article>
+
+      <article class="panel chart-card">
+        <div class="chart-head">
+          <div>
+            <h2>Monthly Comparison</h2>
+            <p>Sales vs orders by month. The best sales month is highlighted.</p>
+          </div>
+          <button class="btn ghost small" type="button" data-download="barChart" title="Download as PNG">⬇ PNG</button>
+        </div>
+        <div class="chart-box"><canvas id="barChart" aria-label="Bar chart comparing sales and orders" role="img"></canvas></div>
+      </article>
+    </section>
+
+    <!-- ===== Statistics, insights and data editor ===== -->
+    <section class="bottom">
+      <article class="panel">
+        <h2 class="panel-title">Descriptive Statistics</h2>
+        <div class="table-scroll">
+          <table class="table" id="statsTable">
+            <thead><tr><th>Metric</th><th>Sales</th><th>Orders</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2 class="panel-title">Smart Insights</h2>
+        <ul class="insights" id="insights"></ul>
+      </article>
+
+      <article class="panel data-panel">
+        <h2 class="panel-title">Dataset <span class="pill" id="rowCount">0 rows</span></h2>
+        <div class="table-scroll">
+          <table class="table" id="dataTable">
+            <thead><tr><th>Month</th><th>Sales</th><th>Orders</th><th>Sales / Order</th><th><span class="sr-only">Actions</span></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <form id="addForm" class="add-form" novalidate>
+          <input id="addMonth" type="text" maxlength="10" placeholder="Month (e.g. Jul)" aria-label="Month">
+          <input id="addSales" type="number" min="1" step="1" placeholder="Sales" aria-label="Sales">
+          <input id="addOrders" type="number" min="1" step="1" placeholder="Orders" aria-label="Orders">
+          <button class="btn primary" type="submit">+ Add</button>
+        </form>
+        <p class="form-msg" id="formMsg" aria-live="polite"></p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <span>01AL0501 – Intelligent Web Designing</span>
+    <span class="viewport" id="viewport" title="Resize the window to test responsiveness">—</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

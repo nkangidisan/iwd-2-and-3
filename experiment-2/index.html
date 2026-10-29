@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Experiment 2 – Responsive UI that dynamically updates text based on user input using JavaScript.">
+  <title>Live Profile Studio | Experiment 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== Header: the greeting heading is updated live from the name input ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">✦</span>
+      <div>
+        <h1 id="greeting">Hello! 👋</h1>
+        <p class="subtitle">Experiment 2 · Dynamic UI with JavaScript DOM manipulation</p>
+      </div>
+    </div>
+    <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+  </header>
+
+  <main class="layout">
+
+    <!-- ===== Left: input form ===== -->
+    <section class="panel form-panel" aria-labelledby="formTitle">
+      <div class="panel-head">
+        <h2 id="formTitle">Build your profile</h2>
+        <span class="pill" id="completeText">0% complete</span>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="completeBar"></span></div>
+
+      <form id="profileForm" novalidate>
+        <div class="field" data-field="name">
+          <label for="nameInput">Full name <span class="req">*</span></label>
+          <div class="input-wrap">
+            <input id="nameInput" name="name" type="text" maxlength="40" autocomplete="name" placeholder="e.g. Riya Patel">
+            <span class="counter" id="nameCount">0/40</span>
+          </div>
+          <small class="msg" id="nameMsg">Letters and spaces, at least 3 characters.</small>
+        </div>
+
+        <div class="field" data-field="email">
+          <label for="emailInput">Email <span class="req">*</span></label>
+          <input id="emailInput" name="email" type="email" autocomplete="email" placeholder="name@example.com">
+          <small class="msg" id="emailMsg">We'll show it on your card.</small>
+        </div>
+
+        <div class="field" data-field="role">
+          <label for="roleInput">Role <span class="req">*</span></label>
+          <select id="roleInput" name="role">
+            <option value="">Choose a role…</option>
+            <option>AI Engineer</option>
+            <option>Data Scientist</option>
+            <option>ML Researcher</option>
+            <option>Web Developer</option>
+            <option>UI/UX Designer</option>
+            <option>Student</option>
+          </select>
+          <small class="msg" id="roleMsg">Shown as a badge on your card.</small>
+        </div>
+
+        <div class="field" data-field="bio">
+          <label for="bioInput">Short bio <span class="req">*</span></label>
+          <textarea id="bioInput" name="bio" rows="4" maxlength="200" placeholder="Tell us about yourself, what you love building and what you are learning…"></textarea>
+          <div class="bio-meta">
+            <small class="msg" id="bioMsg">At least 20 characters.</small>
+            <span class="counter" id="bioCount">0/200</span>
+          </div>
+          <div class="tools" role="group" aria-label="Text tools">
+            <button type="button" class="chip" data-transform="upper">UPPERCASE</button>
+            <button type="button" class="chip" data-transform="lower">lowercase</button>
+            <button type="button" class="chip" data-transform="title">Title Case</button>
+            <button type="button" class="chip" data-transform="sentence">Sentence case</button>
+            <button type="button" class="chip" data-transform="clean">Trim spaces</button>
+          </div>
+        </div>
+
+        <div class="row-2">
+          <fieldset class="field">
+            <legend>Accent colour</legend>
+            <div class="swatches">
+              <label class="swatch" style="--c:#6366f1"><input type="radio" name="accent" value="#6366f1" checked><span></span><em class="sr-only">Indigo</em></label>
+              <label class="swatch" style="--c:#0ea5a4"><input type="radio" name="accent" value="#0ea5a4"><span></span><em class="sr-only">Teal</em></label>
+              <label class="swatch" style="--c:#e11d48"><input type="radio" name="accent" value="#e11d48"><span></span><em class="sr-only">Rose</em></label>
+              <label class="swatch" style="--c:#d97706"><input type="radio" name="accent" value="#d97706"><span></span><em class="sr-only">Amber</em></label>
+              <label class="swatch" style="--c:#7c3aed"><input type="radio" name="accent" value="#7c3aed"><span></span><em class="sr-only">Violet</em></label>
+            </div>
+          </fieldset>
+
+          <div class="field">
+            <label for="fontSize">Bio text size: <output id="fontSizeOut" for="fontSize">16px</output></label>
+            <input id="fontSize" type="range" min="13" max="22" value="16">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary">Save profile</button>
+          <button type="reset" class="btn ghost">Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===== Right: live preview + analytics ===== -->
+    <div class="side">
+      <section class="panel" aria-labelledby="previewTitle">
+        <div class="panel-head">
+          <h2 id="previewTitle">Live preview</h2>
+          <span class="live-dot">Live</span>
+        </div>
+
+        <article class="card" id="previewCard" aria-live="polite">
+          <div class="card-banner"></div>
+          <div class="card-body">
+            <div class="avatar" id="pvAvatar">?</div>
+            <h3 id="pvName" class="placeholder">Your Name</h3>
+            <span class="badge" id="pvRole">Your role</span>
+            <p class="card-email" id="pvEmail">✉ your@email.com</p>
+            <p class="card-bio placeholder" id="pvBio">Your bio will appear here as you type…</p>
+          </div>
+          <footer class="card-foot" id="pvUpdated">Waiting for input…</footer>
+        </article>
+      </section>
+
+      <section class="panel" aria-labelledby="statsTitle">
+        <div class="panel-head">
+          <h2 id="statsTitle">Bio analytics</h2>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong id="stWords">0</strong><span>Words</span></div>
+          <div class="stat"><strong id="stChars">0</strong><span>Characters</span></div>
+          <div class="stat"><strong id="stSentences">0</strong><span>Sentences</span></div>
+          <div class="stat"><strong id="stRead">0s</strong><span>Read time</span></div>
+        </div>
+
+        <div class="sentiment">
+          <div class="sentiment-head">
+            <span>Tone detector</span>
+            <strong id="sentLabel">Neutral 😐</strong>
+          </div>
+          <div class="meter" aria-hidden="true">
+            <span class="needle" id="sentNeedle"></span>
+          </div>
+          <div class="meter-scale"><span>Negative</span><span>Neutral</span><span>Positive</span></div>
+          <p class="hint" id="sentHint">Uses a small keyword lexicon to estimate the tone of your bio.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===== Saved profiles (elements created with JavaScript) ===== -->
+    <section class="panel saved" aria-labelledby="savedTitle">
+      <div class="panel-head">
+        <h2 id="savedTitle">Saved profiles <span class="pill" id="savedCount">0</span></h2>
+        <button type="button" class="btn ghost small" id="clearAll">Clear all</button>
+      </div>
+      <ul class="saved-list" id="savedList"></ul>
+      <p class="empty" id="emptyState">No profiles yet. Fill in the form and press <b>Save profile</b>.</p>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <span>01AL0501 – Intelligent Web Designing</span>
+    <span class="viewport" id="viewport" title="Resize the window to test responsiveness">—</span>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
